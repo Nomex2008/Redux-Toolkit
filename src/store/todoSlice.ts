@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { type } from 'os';
 
 type Todo = {
@@ -7,25 +7,33 @@ type Todo = {
     completed: boolean;
 }
 
+type TodosState = {
+    list : Todo[];
+}
+
+const initialState: TodosState = {
+    list: [],
+}
+
 const todoSlice = createSlice({
     name: 'todos',
-    initialState: {
-        todos: [],
-    },
+    initialState,
     reducers: {
-        addTodo(state, action) {
-            state.todos.push({
+        addTodo(state, action: PayloadAction<string>) {
+            state.list.push({
               id: new Date().toISOString(),
-              title: action.payload.text,
+              title: action.payload,
               completed: false,
             });
         },
-        toggleComplete(state, action) {
-            const toggledTodo = state.todos.find(todo => todo.id === action.payload.id);
-            toggledTodo.completed = !toggledTodo.completed;
+        toggleComplete(state, action: PayloadAction<string>) {
+            const toggledTodo = state.list.find(todo => todo.id === action.payload);
+            if (toggledTodo) {
+                toggledTodo.completed = !toggledTodo.completed;
+            }
         },
-        removeTodo(state, action) {
-            state.todos = state.todos.filter(todo => todo.id !== action.payload.id);
+        removeTodo(state, action: PayloadAction<string>) {
+            state.list = state.list.filter(todo => todo.id !== action.payload);
         }
     },
 });
